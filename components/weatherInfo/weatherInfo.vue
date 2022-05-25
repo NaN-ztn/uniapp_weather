@@ -120,8 +120,6 @@
 
 		uni.hideLoading();
 		isDataReady.value = true
-
-		console.log(detailInfo.value);
 	})
 
 	let tianqi = computed(() => 't-icon-' + weatherToIcon[detailInfo.value.weather])

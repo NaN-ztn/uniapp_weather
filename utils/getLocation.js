@@ -33,7 +33,6 @@ export function getLocation() {
 				method: 'GET',
 				timeout: 6000,
 				success: (res) => {
-
 					const {
 						adcode
 					} = res.data.geocodes[0]

@@ -10,6 +10,7 @@
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
-		"@qiun/ucharts": "^2.4.3-20220505"
+		"@qiun/ucharts": "^2.4.3-20220505",
+		"element-china-area-data": "^5.0.2"
 	}
 }
