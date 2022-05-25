@@ -31,6 +31,7 @@ export function getLocation() {
 			uni.request({
 				url: `https://restapi.amap.com/v3/geocode/geo?address=${province+city+district+street+streetNum}&key=${key}`,
 				method: 'GET',
+				timeout: 6000,
 				success: (res) => {
 
 					const {
@@ -48,7 +49,6 @@ export function getLocation() {
 		}
 
 		function fail() {
-
 			uni.showToast({
 				title: "定位失败",
 				icon: "error"
@@ -60,7 +60,7 @@ export function getLocation() {
 		//#endif
 
 		// #ifdef APP-PLUS
-		getLocationApp()
+		getLocationApp(successAPP, successH5, fail)
 		// #endif
 	})
 
@@ -70,15 +70,16 @@ function getLocationH5(successH5, fail) {
 	uni.request({
 		url: `https://restapi.amap.com/v3/ip?key=${key}`,
 		method: 'GET',
+		timeout: 6000,
 		success: successH5,
 		fail
 	})
 }
 
-function getLocationApp(successAPP) {
+function getLocationApp(successAPP, successH5, fail) {
 	uni.getLocation({
 		success: successAPP,
-		fail: getLocationH5,
+		fail: getLocationH5.bind(null, successH5, fail),
 		geocode: true,
 		type: "gcj02",
 	})

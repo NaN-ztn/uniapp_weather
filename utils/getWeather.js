@@ -49,6 +49,7 @@ export function getWeather(adcode) {
 	uni.request({
 		url: `https://restapi.amap.com/v3/weather/weatherInfo?city=${adcode}&key=${key}&extensions=base`,
 		method: "GET",
+		timeout: 6000,
 		success: success1,
 		fail
 	})
@@ -56,6 +57,7 @@ export function getWeather(adcode) {
 	uni.request({
 		url: `https://restapi.amap.com/v3/weather/weatherInfo?city=${adcode}&key=${key}&extensions=all`,
 		method: "GET",
+		timeout: 6000,
 		success: success2,
 		fail
 	})

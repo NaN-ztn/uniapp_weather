@@ -10,6 +10,6 @@
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
-		"echarts": "^5.3.2"
+		"@qiun/ucharts": "^2.4.3-20220505"
 	}
 }

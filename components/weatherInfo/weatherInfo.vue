@@ -1,6 +1,6 @@
 <template>
 	<!-- 天气信息 -->
-	<uni-section :title="info.province+' > '+info.city" type="circle" class="weatherInfo">
+	<uni-section :title="info.province+' > '+info.city" type="circle" class="weatherInfo" v-show="isDataReady">
 		<uni-card title="基础卡片" sub-title="副标题" extra="额外信息" padding="10px 0">
 			<template v-slot:title>
 				<!-- 市区 -->
@@ -33,7 +33,7 @@
 		</uni-card>
 	</uni-section>
 
-	<uni-section :title="'近 4 日'+info.city+'天气预报'" type="circle" class="weatherInfo">
+	<uni-section :title="'近 4 日'+info.city+'天气预报'" type="circle" class="weatherInfo fade" v-show="isDataReady">
 		<view class="weatherTable">
 			<uni-table stripe emptyText="暂无更多数据">
 				<!-- 表头行 -->
@@ -55,14 +55,15 @@
 			</uni-table>
 		</view>
 	</uni-section>
-
-	<canvas id="myEcharts"></canvas>
-
+	<uni-section :title="'近 4 日'+info.city+'气温趋势图'" type="circle" class="weatherInfo fade" v-show="isDataReady">
+		<view class="charts-box" v-if="chartData">
+			<qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :eopts="{seriesTemplate:{smooth:true}}"
+				:chartData="chartData" :echartsH5="true" :echartsApp="true" />
+		</view>
+	</uni-section>
 </template>
 
 <script setup>
-	// import * as echarts from 'echarts'
-
 	import {
 		onMounted,
 		computed,
@@ -77,24 +78,23 @@
 		getWeather
 	} from "/utils/getWeather.js"
 
-	import {
-		onLoad
-	} from '@dcloudio/uni-app'
-
-
 	const props = defineProps({
 		info: Object
 	})
 
 	let detailInfo = ref({})
 
-	let myCharts = null
+	let isDataReady = ref(false)
 
-	let seriesData1, seriesData2;
+	let chartData = ref(null)
+
+	let seriesData1, seriesData2
 
 	onMounted(async () => {
+		uni.showLoading({
+			title: '加载中'
+		});
 
-		console.log(props.info.adcode);
 		let weatherInfo = await getWeather(props.info.adcode)
 
 		detailInfo.value = {
@@ -105,76 +105,28 @@
 		seriesData1 = detailInfo.value.featureMapData.map(currentValue => currentValue.daytemp)
 		seriesData2 = detailInfo.value.featureMapData.map(currentValue => currentValue.nighttemp)
 
-		console.log(detailInfo.value);
-
-	})
-	let tianqi = computed(() => 't-icon-' + weatherToIcon[detailInfo.value.weather])
-
-
-
-
-	function drawEcharts() {
-		myCharts = uni.createSelectorQuery().in(this).select('#myEcharts')
-		let option = {
-			title: {
-				show: true,
-				text: '温度趋势'
-			},
-			xAxis: [{
-				show: true,
-				splitLine: {
-					show: false
-				},
-				type: 'category',
-				name: '日期',
-				data: ['今天', '明天', '后天', '三天后'],
-				axisLine: {
-					show: true,
-					lineStyle: {
-						color: '#888'
-					}
-				},
-				axisTick: {
-					show: false
-				},
-			}],
-			yAxis: {
-				show: true,
-				axisLine: {
-					show: true,
-					lineStyle: {
-						color: '#888'
-					}
-				},
-				axisTick: {
-					show: false
-				},
-				splitLine: {
-					show: true
-				}
-			},
-			tooltip: {
-				trigger: 'axis',
-			},
-			legend: {
-				data: ['白天气温', '夜间气温'],
-				right: 0
-			},
+		chartData.value = {
+			categories: ['今天', '明天', '后天', '三天后'],
 			series: [{
 					name: '白天气温',
 					data: seriesData1,
-					type: 'line'
 				},
 				{
 					name: '夜间气温',
 					data: seriesData2,
-					type: 'line'
 				}
 			]
 		}
-		myCharts.setOption(option, true);
-	}
+
+		uni.hideLoading();
+		isDataReady.value = true
+
+		console.log(detailInfo.value);
+	})
+
+	let tianqi = computed(() => 't-icon-' + weatherToIcon[detailInfo.value.weather])
 </script>
+
 
 <style lang="less" scoped>
 	.icon-size {
@@ -189,7 +141,12 @@
 	}
 
 	.weatherInfo {
+		margin-top: 15px;
 		background-color: var(--bg-color);
+	}
+
+	.appear {
+		opacity: 1;
 	}
 
 	.infoHead {
@@ -243,9 +200,14 @@
 
 
 	.weatherTable {
-		margin: 0 15px;
+		margin: 20px 15px;
 		border: 1px solid #eff1f7;
 		border-radius: 5px;
 		overflow: hidden;
+	}
+
+	.charts-box {
+		width: 100%;
+		height: 300px;
 	}
 </style>

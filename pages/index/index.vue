@@ -8,10 +8,8 @@
 	</view>
 	<view class="layout">
 
-
-
 		<!-- 天气信息 -->
-		<weatherInfo :info="info"></weatherInfo>
+		<weatherInfo :info="info" v-if="info"></weatherInfo>
 
 	</view>
 </template>
@@ -34,17 +32,19 @@
 
 	// 导航栏显示
 	let headerScroll = ref(false)
-	// 位置信息
-	let info = ref({
-		city: "南通市",
-		province: "江苏省",
-		adcode: '320613'
-	})
+	// 位置信息 
+	let info = ref(null)
 
 	onMounted(async () => {
 		const location = await getLocation()
-		if (location) info.value = location
-		console.log(location);
+		if (location.adcode.length) {
+			info.value = location
+		} else {
+			uni.showToast({
+				title: "暂不支持该地区",
+				icon: 'error'
+			})
+		}
 	})
 
 
@@ -92,12 +92,11 @@
 	}
 
 	.layout {
-		height: 200vh;
 		background-color: var(--bg-color);
+		padding-bottom: 50px;
 		overflow: hidden;
 		/* #ifndef H5 */
 		padding-top: 45rpx;
 		/* #endif */
-
 	}
 </style>
