@@ -4,6 +4,13 @@
 		"style": {
 			"navigationBarTitleText": "天气查询"
 		}
+	}, {
+		"path": "pages/login/login",
+		"style": {
+			"navigationBarTitleText": "登录",
+			"enablePullDownRefresh": false
+		}
+
 	}],
 	"globalStyle": {
 		"navigationStyle": "custom",

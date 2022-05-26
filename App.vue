@@ -13,7 +13,7 @@
 
 
 	:root {
-		--bg-color: #fffef5;
+		--bg-color: #f7f8fa;
 	}
 
 	/* #ifndef APP-NVUE */

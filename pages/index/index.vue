@@ -144,13 +144,14 @@
 		justify-content: center;
 		position: sticky;
 		width: 100vw;
-		transition-property: background-color;
+		transition-property: all;
 		transition-duration: 0.3s;
 		z-index: 3;
 		top: var(--status-bar-height);
 
 		&.active {
-			background-color: #999;
+			background-color: #ddd;
+			box-shadow: 0px 2px 10px 1px rgba(0, 0, 0, 0.3);
 		}
 
 		image {
