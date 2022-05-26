@@ -3,18 +3,18 @@
 		<!-- 这里是状态栏 -->
 	</view>
 	<view class="navgatorBar">
+		<uni-icons class="icon" type="back" size="28" @click="back"></uni-icons>
 		<image src="/static/favicon.png" mode="aspectFit"></image>
 		<view class="title">天气查询</view>
 	</view>
-	<!-- 登录表单 -->
 	<uni-section title="登录" type="line" class="login">
 		<view>
-			<uni-forms ref="loginForm" :modelValue="alignmentFormData">
-				<uni-forms-item label="用户名" required>
-					<uni-easyinput v-model="loginFormData.name" placeholder="请输入用户名" />
+			<uni-forms ref=" loginForm">
+				<uni-forms-item label="手机号" required>
+					<uni-easyinput v-model="loginFormData.phoneNumber" placeholder="请输入手机号" />
 				</uni-forms-item>
 				<uni-forms-item label="密码" required>
-					<uni-easyinput v-model="loginFormData.age" placeholder="请输入密码" />
+					<uni-easyinput v-model="loginFormData.passWord" placeholder="请输入密码" />
 				</uni-forms-item>
 			</uni-forms>
 			<view>
@@ -22,8 +22,8 @@
 				<button class="btn_visitor" @click="handleVisitor">游客访问</button>
 			</view>
 			<view class="register">
-				<navigator url="/pages/index/index" hover-class="hover_style">
-					<text>点此注册账号</text>
+				<navigator animation-type="fade-in" animation-duration="200" url="/pages/register/register">
+					点此注册账号
 				</navigator>
 			</view>
 		</view>
@@ -35,16 +35,19 @@
 		ref
 	} from 'vue'
 
-	//表单数据
-	let alignmentFormData = ref({
-		userName: '',
-		passWord: ''
-	})
+	// //表单数据
+	// let alignmentFormData = ref({
+	// 	phoneNumber: '',
+	// 	passWord: ''
+	// })
 	// 基础表单数据
 	let loginFormData = ref({
 		userName: '',
 		passWord: ''
 	})
+	// 登录表单
+	let loginForm = ref(null)
+
 	// 登录
 	function handleSubmit() {
 		console.log('btn_login');
@@ -52,6 +55,13 @@
 	// 游客登录
 	function handleVisitor() {
 		console.log('btn_visitor');
+	}
+	// 返回
+	function back() {
+		uni.navigateBack({
+			animationType: 'fade-out',
+			animationDuration: 200
+		})
 	}
 </script>
 
@@ -90,8 +100,9 @@
 	}
 
 	.login {
-		background-color: var(--bg-color);
+		background-color: var(--bg-color) !important;
 		margin: 30px 15px 0;
+		padding-top: 10px;
 
 		.btn_visitor {
 			margin-top: 20px;
@@ -105,5 +116,14 @@
 		justify-content: center;
 		font-size: 15px;
 		color: #aeaeae;
+	}
+
+	.icon {
+		position: absolute;
+		left: 20px;
+		top: 0;
+		bottom: 0;
+		display: flex;
+		align-items: center;
 	}
 </style>

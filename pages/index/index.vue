@@ -3,8 +3,9 @@
 		<!-- 这里是状态栏 -->
 	</view>
 	<view class="navgatorBar" :class="{ active: headerScroll }">
+		<!-- 查看添加城市列表 -->
 		<view class="addCity">
-			<uni-icons class="icon" type="list" @click="showDrawer" size="28"></uni-icons>
+			<uni-icons type="list" @click="showDrawer" size="28"></uni-icons>
 			<!-- 抽屉 -->
 			<uni-drawer class="drawer" ref="showLeft" mode="left" :width="320">
 				<view class="drawerHead">
@@ -28,6 +29,8 @@
 
 		<image src="/static/favicon.png" mode="aspectFit"></image>
 		<view class="title">天气查询</view>
+
+		<button @click="toLogin" class="btn_login" size="mini" type="primary">登录</button>
 	</view>
 	<view class="layout">
 		<!-- 天气信息 -->
@@ -127,6 +130,14 @@
 		currentData.value = ""
 		dialog.value.close()
 	}
+	// 前往登录界面
+	function toLogin() {
+		uni.navigateTo({
+			url: '/pages/login/login',
+			animationType: 'fade-in',
+			animationDuration: 200
+		})
+	}
 </script>
 
 <style lang="less" scoped>
@@ -182,16 +193,19 @@
 		top: 0;
 		bottom: 0;
 		left: 20rpx;
-
-		.icon {
-			margin: auto;
-		}
+		align-items: center;
 	}
 
 	.drawerHead {
 		padding: 10px;
 		display: flex;
 		justify-content: space-between;
+	}
+
+	.btn_login {
+		position: absolute;
+		right: 20px;
+		align-self: center;
 	}
 
 	:deep(.uni-data-tree) {

@@ -11,6 +11,13 @@
 			"enablePullDownRefresh": false
 		}
 
+	}, {
+		"path": "pages/register/register",
+		"style": {
+			"navigationBarTitleText": "注册",
+			"enablePullDownRefresh": false
+		}
+
 	}],
 	"globalStyle": {
 		"navigationStyle": "custom",
@@ -19,7 +26,9 @@
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#FFFCF5",
 		"app-plus": {
-			"background": "##FFFCF5"
+			"background": "##FFFCF5",
+			"animationType": "fade-in",
+			"animationDuration": 200
 		}
 	}
 }
