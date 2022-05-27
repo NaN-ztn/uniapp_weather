@@ -13,9 +13,6 @@ export function register(data) {
 					});
 					uni.setStorageSync('uni_id_token', e.result.token)
 					uni.setStorageSync('username', e.result.username)
-					uni.reLaunch({
-						url: '../index/index',
-					});
 					res(e.result.token)
 				} else {
 					uni.showModal({

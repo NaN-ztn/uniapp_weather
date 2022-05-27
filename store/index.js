@@ -10,12 +10,22 @@ const store = createStore({
 		forcedLogin: false,
 		hasLogin: false,
 		userName: "",
+		avatar: "",
+		token: "",
 		univerifyErrorMsg: "",
 		hideUniverify: true
 	},
 	mutations: {
-		login(state, userName) {
+		login(state, payload) {
+			const {
+				userName,
+				avatar,
+				token
+			} = payload
+
 			state.userName = userName || '新用户';
+			state.avatar = avatar
+			state.token = token
 			state.hasLogin = true;
 		},
 		logout(state) {

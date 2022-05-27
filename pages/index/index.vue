@@ -30,7 +30,8 @@
 		<image src="/static/favicon.png" mode="aspectFit"></image>
 		<view class="title">天气查询</view>
 
-		<button @click="toLogin" class="btn_login" size="mini" type="primary">登录</button>
+		<button v-if="!$store.state.hasLogin" @click="toLogin" class="btn_login" size="mini" type="primary">登录</button>
+		<image :src="$store.state.avatar" v-else class="avatar"></image>
 	</view>
 	<view class="layout">
 		<!-- 天气信息 -->
@@ -55,7 +56,12 @@
 	} from 'vue'
 
 	import {
-		onPageScroll
+		useStore
+	} from 'vuex'
+
+	import {
+		onPageScroll,
+		onShow
 	} from '@dcloudio/uni-app'
 
 	import {
@@ -66,6 +72,12 @@
 		provinceAndCityData
 	} from 'element-china-area-data'
 
+	import {
+		checkToken
+	} from '@/api/checkToken.js'
+
+	// 全局状态管理
+	let store = useStore()
 	// 导航栏显示
 	let headerScroll = ref(false)
 	// 位置信息 
@@ -78,6 +90,7 @@
 	let cascadeData = ref(provinceAndCityData)
 	// 级联所选数据
 	let currentData = ref()
+	let isLogin = ref(false)
 
 	onMounted(async () => {
 		const location = await getLocation()
@@ -89,11 +102,23 @@
 				icon: 'error'
 			})
 		}
+		isLogin.value = store.state.hasLogin
 	})
 
 	// 页面滚动事件
 	onPageScroll((res) => {
 		headerScroll.value = res.scrollTop > 10 ? true : false
+	})
+
+	// 页面显示事件
+	onShow(async () => {
+		// let token = uni.getStorageSync('uni_id_token');
+		// let res = await checkToken(token)
+		// if (!res) {
+		// 	uni.reLaunch({
+		// 		url: "../login/login"
+		// 	})
+		// }
 	})
 
 	// 打开窗口
@@ -159,6 +184,7 @@
 		transition-duration: 0.3s;
 		z-index: 3;
 		top: var(--status-bar-height);
+		padding: 5px 0;
 
 		&.active {
 			background-color: #ddd;
@@ -206,6 +232,13 @@
 		position: absolute;
 		right: 20px;
 		align-self: center;
+	}
+
+	.avatar {
+		position: absolute;
+		right: 20px;
+		align-self: center;
+		border-radius: 50%;
 	}
 
 	:deep(.uni-data-tree) {

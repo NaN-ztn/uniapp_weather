@@ -38,6 +38,10 @@
 	} from 'vue'
 
 	import {
+		useStore
+	} from 'vuex'
+
+	import {
 		onReady
 	} from '@dcloudio/uni-app'
 
@@ -53,6 +57,8 @@
 		setAvatar
 	} from '@/api/setAvatar.js'
 
+	// 全局状态管理
+	const store = useStore()
 	// 基础表单数据
 	let registerFormData = ref({
 		userName: '',
@@ -158,6 +164,14 @@
 				avatar = url
 			}
 			await setAvatar(avatar, uniIdToken)
+			store.commit('login', {
+				userName: registerFormData.value.userName,
+				avatar,
+				token: uniIdToken
+			})
+			uni.reLaunch({
+				url: '../index/index',
+			});
 		}).catch(err => {
 			return
 		})

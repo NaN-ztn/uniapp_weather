@@ -63,13 +63,16 @@
 		deviceId: getDeviceUUID(),
 		scene: 'login'
 	}
-
 	// 基础表单数据
 	let loginFormData = ref({
 		userName: '',
 		passWord: '',
 		veryfyCode: ''
 	})
+	// 头像
+	let avatar
+	// token
+	let token
 	// 登录表单
 	let loginForm = ref(null)
 	// 是否需要验证码
@@ -139,12 +142,15 @@
 				success: (e) => {
 					if (e.result.code == 0) {
 						needCaptcha.value = false;
+						avatar = e.result.userInfo.avatar
+						token = e.result.token
 						uni.setStorageSync('uni-needCaptcha', needCaptcha.value)
 
-						uni.setStorageSync('uni_id_token', e.result.token)
+						uni.setStorageSync('uni_id_token', token)
 						uni.setStorageSync('username', e.result.username)
 						uni.setStorageSync('login_type', 'online')
 						uni.setStorageSync('uni_id_has_pwd', true)
+						uni.setStorageSync('avatar', avatar)
 						toMain(loginFormData.value.userName);
 					} else {
 						uni.hideToast()
@@ -198,7 +204,11 @@
 	}
 	// 登录跳转
 	function toMain(userName) {
-		store.commit('login', userName)
+		store.commit('login', {
+			userName,
+			avatar,
+			token
+		})
 		/**
 		 * 强制登录时使用reLaunch方式跳转过来
 		 * 返回首页也使用reLaunch方式
