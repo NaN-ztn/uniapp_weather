@@ -198,7 +198,6 @@
 	}
 	// 登录跳转
 	function toMain(userName) {
-		console.log(userName);
 		store.commit('login', userName)
 		/**
 		 * 强制登录时使用reLaunch方式跳转过来

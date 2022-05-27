@@ -55,7 +55,7 @@
 			</uni-table>
 		</view>
 	</uni-section>
-	<uni-section :title="'近 4 日'+info.city+'气温趋势图'" type="circle" class="weatherInfo fade" v-show="isDataReady">
+	<uni-section :title="'近 4 日'+info.city+'气温趋势图'" type="circle" class="weatherInfo fade" v-if="isDataReady">
 		<view class="charts-box" v-if="chartData">
 			<qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :eopts="{seriesTemplate:{smooth:true}}"
 				:chartData="chartData" :echartsH5="true" :echartsApp="true" />
@@ -81,12 +81,14 @@
 	const props = defineProps({
 		info: Object
 	})
-
+	// 获取的天气信息
 	let detailInfo = ref({})
-
+	// 数据是否获取
 	let isDataReady = ref(false)
-
+	// 图表数据
 	let chartData = ref(null)
+	// 是否渲染图标
+	let isRender = ref(false)
 
 	let seriesData1, seriesData2
 
@@ -121,6 +123,7 @@
 		uni.hideLoading();
 		isDataReady.value = true
 	})
+
 
 	let tianqi = computed(() => 't-icon-' + weatherToIcon[detailInfo.value.weather])
 </script>
