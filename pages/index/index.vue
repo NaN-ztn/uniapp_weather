@@ -31,7 +31,7 @@
 		<view class="title">天气查询</view>
 
 		<button v-if="!$store.state.hasLogin" @click="toLogin" class="btn_login" size="mini" type="primary">登录</button>
-		<image :src="$store.state.avatar" v-else class="avatar"></image>
+		<image @click="toUserInfo" :src="$store.state.avatar" v-else class="avatar"></image>
 	</view>
 	<view class="layout">
 		<!-- 天气信息 -->
@@ -60,8 +60,7 @@
 	} from 'vuex'
 
 	import {
-		onPageScroll,
-		onShow
+		onPageScroll
 	} from '@dcloudio/uni-app'
 
 	import {
@@ -71,10 +70,6 @@
 	import {
 		provinceAndCityData
 	} from 'element-china-area-data'
-
-	import {
-		checkToken
-	} from '@/api/checkToken.js'
 
 	// 全局状态管理
 	let store = useStore()
@@ -108,17 +103,6 @@
 	// 页面滚动事件
 	onPageScroll((res) => {
 		headerScroll.value = res.scrollTop > 10 ? true : false
-	})
-
-	// 页面显示事件
-	onShow(async () => {
-		// let token = uni.getStorageSync('uni_id_token');
-		// let res = await checkToken(token)
-		// if (!res) {
-		// 	uni.reLaunch({
-		// 		url: "../login/login"
-		// 	})
-		// }
 	})
 
 	// 打开窗口
@@ -159,6 +143,14 @@
 	function toLogin() {
 		uni.navigateTo({
 			url: '/pages/login/login',
+			animationType: 'fade-in',
+			animationDuration: 200
+		})
+	}
+	// 跳转用户详情界面
+	function toUserInfo() {
+		uni.navigateTo({
+			url: '/pages/userInfo/userInfo',
 			animationType: 'fade-in',
 			animationDuration: 200
 		})
@@ -239,6 +231,7 @@
 		right: 20px;
 		align-self: center;
 		border-radius: 50%;
+		border: 1px solid #999;
 	}
 
 	:deep(.uni-data-tree) {

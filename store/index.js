@@ -13,6 +13,8 @@ const store = createStore({
 		avatar: "",
 		token: "",
 		univerifyErrorMsg: "",
+		registerDate: "",
+		lastLoginDate: "",
 		hideUniverify: true
 	},
 	mutations: {
@@ -30,6 +32,10 @@ const store = createStore({
 		},
 		logout(state) {
 			state.userName = "";
+			state.token = "";
+			state.avatar = "";
+			state.lastLoginDate = "";
+			state.registerDate = "";
 			state.hasLogin = false;
 		},
 		setUniverifyErrorMsg(state, payload = '') {
@@ -37,6 +43,13 @@ const store = createStore({
 		},
 		setHideUniverify(state, payload = false) {
 			state.hideUniverify = payload
+		},
+		setTime(state, {
+			registerDate,
+			lastLoginDate
+		}) {
+			state.lastLoginDate = lastLoginDate;
+			state.registerDate = registerDate;
 		}
 	}
 })

@@ -262,14 +262,12 @@
 	.navgatorBar {
 		background-color: var(--bg-color);
 		display: flex;
-		justify-content:
-			center;
+		justify-content: center;
 		position: sticky;
 		width: 100vw;
-		transition-property: background-color;
-		transition-duration: 0.3s;
 		z-index: 3;
 		top: var(--status-bar-height);
+		padding: 5px 0;
 
 		image {
 			width: 3em;
