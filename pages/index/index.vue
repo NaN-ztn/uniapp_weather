@@ -8,6 +8,9 @@
 			<uni-icons type="list" @click="showDrawer" size="28"></uni-icons>
 			<!-- 抽屉 -->
 			<uni-drawer class="drawer" ref="showLeft" mode="left" :width="320">
+				<view class="status_bar">
+					<!-- 这里是状态栏 -->
+				</view>
 				<view class="drawerHead">
 					<uni-icons type="back" @click="closeDrawer" size="28"></uni-icons>
 					<uni-icons type="plusempty" @click="showDialog" size="28"></uni-icons>
@@ -141,10 +144,8 @@
 	}
 	// 前往登录界面
 	function toLogin() {
-		uni.navigateTo({
+		uni.reLaunch({
 			url: '/pages/login/login',
-			animationType: 'fade-in',
-			animationDuration: 200
 		})
 	}
 	// 跳转用户详情界面
@@ -180,7 +181,7 @@
 
 		&.active {
 			background-color: #ddd;
-			box-shadow: 0px 2px 10px 1px rgba(0, 0, 0, 0.3);
+			box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, 0.3);
 		}
 
 		image {
@@ -216,6 +217,7 @@
 
 	.drawerHead {
 		padding: 10px;
+		padding-top: var(--status-bar-height);
 		display: flex;
 		justify-content: space-between;
 	}

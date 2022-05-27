@@ -236,7 +236,7 @@
 	.register {
 		background-color: var(--bg-color) !important;
 		margin: 0 15px;
-		padding-top: 10px;
+		padding-top: 30px;
 	}
 
 	.avatar_item {

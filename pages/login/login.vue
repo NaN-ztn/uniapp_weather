@@ -3,7 +3,6 @@
 		<!-- 这里是状态栏 -->
 	</view>
 	<view class="navgatorBar">
-		<uni-icons class="icon" type="back" size="28" @click="back"></uni-icons>
 		<image src="/static/favicon.png" mode="aspectFit"></image>
 		<view class="title">天气查询</view>
 	</view>
@@ -186,10 +185,8 @@
 			title: "游客访问受限",
 			success() {
 				setTimeout(() => {
-					uni.navigateTo({
-						url: "../index/index",
-						animationType: 'fade-in',
-						animationDuration: 200
+					uni.reLaunch({
+						url: "../index/index"
 					})
 				}, 1500)
 			}
@@ -285,7 +282,7 @@
 	.login {
 		background-color: var(--bg-color) !important;
 		margin: 0 15px;
-		padding-top: 10px;
+		padding-top: 30px;
 
 		.btn_visitor {
 			margin-top: 20px;
@@ -299,15 +296,6 @@
 		justify-content: center;
 		font-size: 15px;
 		color: #aeaeae;
-	}
-
-	.icon {
-		position: absolute;
-		left: 20px;
-		top: 0;
-		bottom: 0;
-		display: flex;
-		align-items: center;
 	}
 
 	.login-type {

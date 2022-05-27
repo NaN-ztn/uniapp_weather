@@ -15,7 +15,7 @@
 			<uni-list class="list">
 				<uni-list-item title="用户名" class="item">
 					<template #body>
-						<view style="padding-left:50rpx ;width:250rpx;">
+						<view style="padding-left:50rpx ;width:300rpx;">
 							用户名：
 						</view>
 						<view>{{$store.state.userName}}</view>
@@ -23,7 +23,7 @@
 				</uni-list-item>
 				<uni-list-item title="注册时间" class="item">
 					<template #body>
-						<view style="padding-left:50rpx ;width:250rpx;">
+						<view style="padding-left:50rpx ;width:300rpx;">
 							注册时间：
 						</view>
 						<view>{{registerDate}}</view>
@@ -31,7 +31,7 @@
 				</uni-list-item>
 				<uni-list-item title="上次登录时间" class="item">
 					<template #body>
-						<view style="padding-left:50rpx ;width:250rpx;">
+						<view style="padding-left:50rpx ;width:300rpx;">
 							上次登录时间：
 						</view>
 						<view>{{lastLoginDate}}</view>
@@ -68,7 +68,9 @@
 		if (store.state.registerDate === "" && store.state.lastLoginDate === "") {
 			let res = await getUserInfo(store.state.token)
 			registerDate.value = new Date(res.register_date).toLocaleString()
-			lastLoginDate.value = new Date(res.last_login_date).toLocaleString()
+			if (res.last_login_date)
+				lastLoginDate.value = new Date(res.last_login_date).toLocaleString()
+			else lastLoginDate.value = '无'
 			store.commit('setTime', {
 				registerDate: registerDate.value,
 				lastLoginDate: lastLoginDate.value
