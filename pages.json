@@ -1,16 +1,16 @@
 {
 	"pages": [{
-		"path": "pages/index/index",
-		"style": {
-			"navigationBarTitleText": "天气查询"
-		}
-	}, {
 		"path": "pages/login/login",
 		"style": {
 			"navigationBarTitleText": "登录",
 			"enablePullDownRefresh": false
 		}
 
+	}, {
+		"path": "pages/index/index",
+		"style": {
+			"navigationBarTitleText": "天气查询"
+		}
 	}, {
 		"path": "pages/register/register",
 		"style": {

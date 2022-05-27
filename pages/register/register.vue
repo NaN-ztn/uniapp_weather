@@ -9,15 +9,15 @@
 	</view>
 	<!-- 注册表单 -->
 	<uni-section title="注册" type="line" class="register">
-		<uni-forms ref="registerForm">
-			<uni-forms-item label="手机号" required>
-				<uni-easyinput v-model="registerFormData.phoneNumber" placeholder="请输入手机号" />
+		<uni-forms ref="registerForm" validate-trigger="bind">
+			<uni-forms-item label="用户名" required name="userName">
+				<uni-easyinput v-model="registerFormData.userName" placeholder="请输入用户名" />
 			</uni-forms-item>
-			<uni-forms-item label="密码" required>
-				<uni-easyinput v-model="registerFormData.passWord" placeholder="请输入密码" />
+			<uni-forms-item label="密码" required name="passWord">
+				<uni-easyinput type="password" v-model="registerFormData.passWord" placeholder="请输入密码" />
 			</uni-forms-item>
-			<uni-forms-item label="验证码" required>
-				<uni-easyinput v-model="registerFormData.veryCode" placeholder="请输入验证码" />
+			<uni-forms-item label="确认密码" required name="veryfyPassWord">
+				<uni-easyinput type="password" v-model="registerFormData.veryPassWord" placeholder="请输确认密码" />
 			</uni-forms-item>
 			<uni-forms-item label="头像">
 				<view class="avatar_item">
@@ -36,16 +36,23 @@
 		ref
 	} from 'vue'
 
-	// //表单数据
-	// let alignmentFormData = ref({
-	// 	phoneNumber: '',
-	// 	passWord: ''
-	// })
+	import {
+		onReady
+	} from '@dcloudio/uni-app'
+
+	import {
+		register
+	} from '@/api/regester.js'
+
+	import {
+		checkUser
+	} from '@/api/checkUser.js'
+
 	// 基础表单数据
 	let registerFormData = ref({
-		phoneNumber: '',
+		userName: '',
 		passWord: '',
-		veryCode: '',
+		veryPassWord: '',
 		fileLists: {},
 		file: {}
 	})
@@ -59,11 +66,85 @@
 			radius: '50%'
 		}
 	})
+	// 校验规则
+	let rules = {
+		passWord: {
+			rules: [{
+				required: true,
+				errorMessage: '密码不能为空'
+			}, {
+				validateFunction: function(rule, value, data, callback) {
+					let pwd = String(value);
+					if (pwd.indexOf(" ") != -1) {
+						callback("密码不能存在空格")
+						return false
+					}
+					if (pwd.length < 6 || pwd.length > 18) {
+						callback("密码长度需在6到18位之间")
+						return false
+					}
+					return true
+				}
+			}]
+		},
+		veryfyPassWord: {
+			rules: [{
+				required: true,
+				errorMessage: '确认密码不能为空'
+			}, {
+				validateFunction: function(rule, value, data, callback) {
+					let vpwd = String(value);
+					if (vpwd !== registerFormData.value.passWord) {
+						callback("请输入正确密码")
+						return false
+					}
+					return true
+				}
+			}, {
+
+				validateFunction: function(rule, value, data, callback) {
+					let pwd = String(value);
+					if (pwd.indexOf(" ") != -1) {
+						callback("密码不能存在空格")
+						return false
+					}
+					if (pwd.length < 6 || pwd.length > 18) {
+						callback("密码长度需在6到18位之间")
+						return false
+					}
+					return true
+				}
+
+			}]
+		},
+		userName: {
+			rules: [{
+				required: true,
+				errorMessage: '用户名不能为空'
+			}, {
+				validateFunction: function(rule, value, data, callback) {
+					return checkUser(registerFormData.value.userName)
+				}
+			}],
+			validateTrigger: "submit"
+		}
+	}
+
+	onReady(() => {
+		registerForm.value.setRules(rules)
+	})
 
 	// 注册
-	function handleSubmit() {
-		console.log('btn_register');
-		console.log(registerFormData.value);
+	async function handleSubmit() {
+		registerForm.value.validate().then(res => {
+			let data = {
+				username: registerFormData.value.userName,
+				password: registerFormData.value.passWord
+			}
+			register(data)
+		}).catch(err => {
+			return
+		})
 	}
 	// 返回
 	function back() {
@@ -116,7 +197,7 @@
 
 	.register {
 		background-color: var(--bg-color) !important;
-		margin: 30px 15px 0;
+		margin: 0 15px;
 		padding-top: 10px;
 	}
 
