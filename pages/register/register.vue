@@ -21,8 +21,9 @@
 			</uni-forms-item>
 			<uni-forms-item label="头像">
 				<view class="avatar_item">
-					<uni-file-picker @select="selectAvatar" return-type="object" v-model="registerFormData.fileLists"
-						limit="1" :imageStyles="imageStyles" file-mediatype="image">
+					<uni-file-picker ref="uploadComponent" :autoUpload="false" @success="handleSuccess"
+						@select="selectAvatar" return-type="object" v-model="registerFormData.fileLists" limit="1"
+						:imageStyles="imageStyles" @delete="handleDelete" file-mediatype="image">
 						选择</uni-file-picker>
 				</view>
 			</uni-forms-item>
@@ -48,16 +49,22 @@
 		checkUser
 	} from '@/api/checkUser.js'
 
+	import {
+		setAvatar
+	} from '@/api/setAvatar.js'
+
 	// 基础表单数据
 	let registerFormData = ref({
 		userName: '',
 		passWord: '',
 		veryPassWord: '',
 		fileLists: {},
-		file: {}
+		file: null
 	})
 	// 注册表单
 	let registerForm = ref(null)
+	// 上传控件
+	let uploadComponent = ref(null)
 	// 头像上传样式
 	let imageStyles = ref({
 		width: 80,
@@ -136,12 +143,21 @@
 
 	// 注册
 	async function handleSubmit() {
-		registerForm.value.validate().then(res => {
+		registerForm.value.validate().then(async res => {
 			let data = {
 				username: registerFormData.value.userName,
-				password: registerFormData.value.passWord
+				password: registerFormData.value.passWord,
 			}
-			register(data)
+			let uniIdToken = await register(data)
+			let avatar =
+				'https://vkceyugu.cdn.bspapp.com/VKCEYUGU-67fb10a5-3acc-48e5-855b-60b6e11be702/c10684aa-374b-436c-9737-52139328efca.png'
+			if (registerFormData.value.file) {
+				let [{
+					url
+				}] = await uploadComponent.value.upload()
+				avatar = url
+			}
+			await setAvatar(avatar, uniIdToken)
 		}).catch(err => {
 			return
 		})
@@ -158,6 +174,16 @@
 		tempFiles
 	}) {
 		registerFormData.value.file = tempFiles[0]
+	}
+	// 处理上传文件删除
+	function handleDelete(e) {
+		registerFormData.value.file = null
+	}
+	// 处理上传成功回调
+	function handleSuccess({
+		tempFilePaths
+	}) {
+		// console.log(tempFilePaths);
 	}
 </script>
 

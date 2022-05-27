@@ -7,7 +7,6 @@ export function register(data) {
 				params: data
 			},
 			success(e) {
-				// console.log(e)
 				if (e.result.code === 0) {
 					uni.showToast({
 						title: '注册成功'
@@ -17,7 +16,7 @@ export function register(data) {
 					uni.reLaunch({
 						url: '../index/index',
 					});
-					res('注册成功')
+					res(e.result.token)
 				} else {
 					uni.showModal({
 						content: JSON.stringify(e.result),
