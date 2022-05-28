@@ -1,0 +1,7 @@
+{
+  "name": "addCity",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

@@ -27,7 +27,9 @@ export function getWeather(adcode) {
 			winddirection,
 			windpower,
 			humidity,
-			reporttime
+			reporttime,
+			province,
+			city
 		} = res.data.lives[0]
 		p1Resolve({
 			weather,
@@ -35,7 +37,9 @@ export function getWeather(adcode) {
 			winddirection,
 			windpower,
 			humidity,
-			reporttime
+			reporttime,
+			province,
+			city
 		})
 	}
 

@@ -17,13 +17,22 @@
 				</view>
 				<!-- 列表 -->
 				<uni-list>
-					<uni-list-item>
+					<uni-list-item @click="handleListClick(-1)" clickable>
 						<template #header>
 							<uni-icons type="location-filled" size="28" color="green"></uni-icons>
-							<text style="padding: 5px 0 0 5px;">列表文字</text>
+							<text style="padding: 5px 0 0 5px;" :class="{'activeList':cityIndex===-1}">所在城市</text>
+						</template>
+					</uni-list-item>
+					<uni-list-item v-for="(item, index) in cityList" :key="item._id" @click="handleListClick(index)"
+						clickable>
+						<template #header>
+							<text style="padding: 5px 0 0 5px;">{{item.province}} / {{item.city}}</text>
 						</template>
 						<template #footer>
-							<uni-icons type="close" size="28" color="darkred"></uni-icons>
+							<view @click.stop="handleListRemove(item._id,index)">
+								<uni-icons type="close" size="28" color="darkred">
+								</uni-icons>
+							</view>
 						</template>
 					</uni-list-item>
 				</uni-list>
@@ -44,8 +53,8 @@
 	<uni-popup ref="dialog" type="dialog">
 		<uni-popup-dialog ref="inputClose" mode="input" title="查询城市" @close="clseDialog" @confirm="confirmDialog"
 			:before-close="true">
-			<uni-data-picker placeholder="请选择查询地区" popup-title="查询地区" :localdata="cascadeData" v-model="currentData"
-				:map="{value:'value',text:'label'}">
+			<uni-data-picker ref="cascade" placeholder="请选择查询地区" popup-title="查询地区" :localdata="cascadeData"
+				v-model="currentData" :map="{value:'value',text:'label'}">
 			</uni-data-picker>
 		</uni-popup-dialog>
 	</uni-popup>
@@ -68,7 +77,13 @@
 
 	import {
 		getLocation
-	} from '/utils/getLocation.js'
+	} from '@/utils/getLocation.js'
+
+	import {
+		addCity,
+		getCity,
+		deleteCity
+	} from '@/api/city.js'
 
 	import {
 		provinceAndCityData
@@ -84,16 +99,23 @@
 	let showLeft = ref(null)
 	// 对话框控件
 	let dialog = ref(null)
+	// 级联控件
+	let cascade = ref(null)
 	// 级联数据
 	let cascadeData = ref(provinceAndCityData)
 	// 级联所选数据
 	let currentData = ref()
+	// 是否登录
 	let isLogin = ref(false)
+	// 城市列表数据
+	let cityList = ref([])
+	// 所选城市下标
+	let cityIndex = ref(-1)
 
 	onMounted(async () => {
 		const location = await getLocation()
 		if (location.adcode.length) {
-			info.value = location
+			info.value = location.adcode
 		} else {
 			uni.showToast({
 				title: "暂不支持该地区",
@@ -101,6 +123,9 @@
 			})
 		}
 		isLogin.value = store.state.hasLogin
+
+		cityList.value = await getCity(store.state.userName)
+
 	})
 
 	// 页面滚动事件
@@ -121,7 +146,7 @@
 		dialog.value.open()
 	}
 	// 对话框确认
-	function confirmDialog() {
+	async function confirmDialog() {
 		if (!currentData.value) {
 			uni.showToast({
 				title: "查询地区不能为空",
@@ -136,6 +161,27 @@
 			})
 			currentData.value = ""
 		}
+		const province = cascade.value.inputSelected[0].text
+		const city = cascade.value.inputSelected[1].text
+		uni.showToast({
+			title: '添加中',
+			icon: 'loading'
+		});
+		let res = await addCity(store.state.userName, province, city, currentData.value)
+		cityList.value.push({
+			_id: res.id,
+			province,
+			city,
+			adcode: currentData.value
+		})
+		uni.hideToast()
+		uni.showToast({
+			title: res.message,
+			icon: res.success ? 'success' : 'error'
+		});
+		cityList.value.push
+		currentData.value = ""
+		dialog.value.close()
 	}
 	// 对话框取消
 	function clseDialog() {
@@ -154,6 +200,24 @@
 			url: '/pages/userInfo/userInfo',
 			animationType: 'fade-in',
 			animationDuration: 200
+		})
+	}
+	// 处理列表点击事件
+	function handleListClick(index) {
+		console.log(index);
+	}
+	// 处理列表移除事件
+	async function handleListRemove(_id, index) {
+		uni.showToast({
+			icon: 'loading',
+			title: '加载中'
+		})
+		await deleteCity(_id)
+		cityList.value.splice(index, 1)
+		uni.hideToast()
+		uni.showToast({
+			icon: 'success',
+			title: '删除成功'
 		})
 	}
 </script>
@@ -216,6 +280,7 @@
 	}
 
 	.drawerHead {
+		margin-top: 10px;
 		padding: 10px;
 		padding-top: var(--status-bar-height);
 		display: flex;
@@ -234,6 +299,10 @@
 		align-self: center;
 		border-radius: 50%;
 		border: 1px solid #999;
+	}
+
+	.activeList {
+		color: #2979ff;
 	}
 
 	:deep(.uni-data-tree) {

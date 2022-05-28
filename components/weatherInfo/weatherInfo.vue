@@ -1,12 +1,13 @@
 <template>
 	<!-- 天气信息 -->
-	<uni-section :title="info.province+' > '+info.city" type="circle" class="weatherInfo" v-show="isDataReady">
+	<uni-section :title="detailInfo.province+' > '+detailInfo.city" type="circle" class="weatherInfo"
+		v-show="isDataReady">
 		<uni-card title="基础卡片" sub-title="副标题" extra="额外信息" padding="10px 0">
 			<template v-slot:title>
 				<!-- 市区 -->
 				<view class="infoHead">
 					<text class="t-icon icon-size" :class="tianqi"></text>
-					<text>{{info.city}}</text>
+					<text>{{detailInfo.city}}</text>
 					<view class="realTime">(实时)</view>
 					<view class="line"></view>
 				</view>
@@ -33,7 +34,7 @@
 		</uni-card>
 	</uni-section>
 
-	<uni-section :title="'近 4 日'+info.city+'天气预报'" type="circle" class="weatherInfo fade" v-show="isDataReady">
+	<uni-section :title="'近 4 日'+detailInfo.city+'天气预报'" type="circle" class="weatherInfo fade" v-show="isDataReady">
 		<view class="weatherTable">
 			<uni-table stripe emptyText="暂无更多数据">
 				<!-- 表头行 -->
@@ -55,7 +56,7 @@
 			</uni-table>
 		</view>
 	</uni-section>
-	<uni-section :title="'近 4 日'+info.city+'气温趋势图'" type="circle" class="weatherInfo fade" v-if="isDataReady">
+	<uni-section :title="'近 4 日'+detailInfo.city+'气温趋势图'" type="circle" class="weatherInfo fade" v-if="isDataReady">
 		<view class="charts-box" v-if="chartData">
 			<qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :eopts="{seriesTemplate:{smooth:true}}"
 				:chartData="chartData" :echartsH5="true" :echartsApp="true" />
@@ -66,8 +67,10 @@
 <script setup>
 	import {
 		onMounted,
+		onUpdated,
 		computed,
-		ref
+		ref,
+		watch
 	} from 'vue'
 
 	import {
@@ -79,7 +82,7 @@
 	} from "/utils/getWeather.js"
 
 	const props = defineProps({
-		info: Object
+		info: String
 	})
 	// 获取的天气信息
 	let detailInfo = ref({})
@@ -93,11 +96,12 @@
 	let seriesData1, seriesData2
 
 	onMounted(async () => {
+		console.log(props.info);
 		uni.showLoading({
 			title: '加载中'
 		});
 
-		let weatherInfo = await getWeather(props.info.adcode)
+		let weatherInfo = await getWeather(props.info)
 
 		detailInfo.value = {
 			...weatherInfo[0],
@@ -122,6 +126,10 @@
 
 		uni.hideLoading();
 		isDataReady.value = true
+	})
+
+	watch(props.info, () => {
+		console.log(1);
 	})
 
 
