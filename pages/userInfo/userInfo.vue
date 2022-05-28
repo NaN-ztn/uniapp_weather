@@ -29,10 +29,10 @@
 						<view>{{registerDate}}</view>
 					</template>
 				</uni-list-item>
-				<uni-list-item title="上次登录时间" class="item">
+				<uni-list-item title="最近登录时间" class="item">
 					<template #body>
 						<view style="padding-left:50rpx ;width:300rpx;">
-							上次登录时间：
+							最近登录时间：
 						</view>
 						<view>{{lastLoginDate}}</view>
 					</template>
@@ -57,6 +57,10 @@
 		getUserInfo
 	} from '@/api/getUserInfo.js'
 
+	import {
+		formatDate
+	} from '@/utils/formatDate.js'
+
 	// 全局状态管理
 	let store = useStore()
 	// 注册时间
@@ -67,10 +71,12 @@
 	onMounted(async () => {
 		if (store.state.registerDate === "" && store.state.lastLoginDate === "") {
 			let res = await getUserInfo(store.state.token)
-			registerDate.value = new Date(res.register_date).toLocaleString()
-			if (res.last_login_date)
-				lastLoginDate.value = new Date(res.last_login_date).toLocaleString()
-			else lastLoginDate.value = '无'
+			registerDate.value = formatDate(new Date(res.register_date))
+			if (res.last_login_date) {
+				lastLoginDate.value = formatDate(new Date(res.last_login_date))
+			} else {
+				lastLoginDate.value = '无'
+			}
 			store.commit('setTime', {
 				registerDate: registerDate.value,
 				lastLoginDate: lastLoginDate.value
