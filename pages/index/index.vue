@@ -7,7 +7,7 @@
 		<view class="addCity">
 			<uni-icons type="list" @click="showDrawer" size="28"></uni-icons>
 			<!-- 抽屉 -->
-			<uni-drawer class="drawer" ref="showLeft" mode="left" :width="320">
+			<uni-drawer v-if="$store.state.hasLogin" class="drawer" ref="showLeft" mode="left" :width="320">
 				<view class="status_bar">
 					<!-- 这里是状态栏 -->
 				</view>
@@ -17,19 +17,21 @@
 				</view>
 				<!-- 列表 -->
 				<uni-list>
-					<uni-list-item @click="handleListClick(-1)" clickable>
+					<uni-list-item @click="handleListClick(-1,localAdcode)" clickable>
 						<template #header>
 							<uni-icons type="location-filled" size="28" color="green"></uni-icons>
 							<text style="padding: 5px 0 0 5px;" :class="{'activeList':cityIndex===-1}">所在城市</text>
 						</template>
 					</uni-list-item>
-					<uni-list-item v-for="(item, index) in cityList" :key="item._id" @click="handleListClick(index)"
-						clickable>
+					<uni-list-item v-for="(item, index) in cityList" :key="item._id"
+						@click="handleListClick(index,item.adcode)" clickable>
 						<template #header>
-							<text style="padding: 5px 0 0 5px;">{{item.province}} / {{item.city}}</text>
+							<text style="padding: 5px 0 0 5px;"
+								:class="{'activeList':cityIndex===index}">{{item.province}}
+								/ {{item.city}}</text>
 						</template>
 						<template #footer>
-							<view @click.stop="handleListRemove(item._id,index)">
+							<view @click.stop=" handleListRemove(item._id,index)">
 								<uni-icons type="close" size="28" color="darkred">
 								</uni-icons>
 							</view>
@@ -65,6 +67,7 @@
 	import {
 		ref,
 		onMounted,
+		nextTick
 	} from 'vue'
 
 	import {
@@ -111,10 +114,17 @@
 	let cityList = ref([])
 	// 所选城市下标
 	let cityIndex = ref(-1)
+	// 所在地城市 adcode
+	let localAdcode = ref()
 
 	onMounted(async () => {
+		uni.showToast({
+			icon: 'loading',
+			title: '加载中'
+		})
 		const location = await getLocation()
 		if (location.adcode.length) {
+			localAdcode.value = location.adcode
 			info.value = location.adcode
 		} else {
 			uni.showToast({
@@ -122,10 +132,11 @@
 				icon: 'error'
 			})
 		}
+
 		isLogin.value = store.state.hasLogin
 
 		cityList.value = await getCity(store.state.userName)
-
+		uni.hideToast()
 	})
 
 	// 页面滚动事件
@@ -135,13 +146,20 @@
 
 	// 打开窗口
 	function showDrawer() {
+		if (!store.state.hasLogin) {
+			uni.showToast({
+				icon: 'error',
+				title: '游客功能受限'
+			})
+			return
+		}
 		showLeft.value.open()
 	}
 	// 关闭窗口 
 	function closeDrawer() {
 		showLeft.value.close()
 	}
-	// 打开窗口
+	// 打开对话框
 	function showDialog() {
 		dialog.value.open()
 	}
@@ -168,20 +186,26 @@
 			icon: 'loading'
 		});
 		let res = await addCity(store.state.userName, province, city, currentData.value)
-		cityList.value.push({
-			_id: res.id,
-			province,
-			city,
-			adcode: currentData.value
-		})
 		uni.hideToast()
+		if (res.success) {
+			cityList.value.push({
+				_id: res.id,
+				province,
+				city,
+				adcode: currentData.value
+			})
+			cityIndex.value = cityList.value.length - 1
+		} else {
+			cityIndex.value = cityList.value.findIndex(item => item.adcode === currentData.value)
+		}
+		info.value = currentData.value
+		currentData.value = ""
+		dialog.value.close()
+		closeDrawer()
 		uni.showToast({
 			title: res.message,
 			icon: res.success ? 'success' : 'error'
 		});
-		cityList.value.push
-		currentData.value = ""
-		dialog.value.close()
 	}
 	// 对话框取消
 	function clseDialog() {
@@ -197,17 +221,23 @@
 	// 跳转用户详情界面
 	function toUserInfo() {
 		uni.navigateTo({
-			url: '/pages/userInfo/userInfo',
+			url: '../userInfo/userInfo',
 			animationType: 'fade-in',
 			animationDuration: 200
 		})
 	}
 	// 处理列表点击事件
-	function handleListClick(index) {
-		console.log(index);
+	function handleListClick(index, adcode) {
+		info.value = adcode
+		cityIndex.value = index
+		closeDrawer()
 	}
 	// 处理列表移除事件
 	async function handleListRemove(_id, index) {
+		if (index === cityIndex.value) {
+			cityIndex.value = -1
+			info.value = localAdcode.value
+		}
 		uni.showToast({
 			icon: 'loading',
 			title: '加载中'

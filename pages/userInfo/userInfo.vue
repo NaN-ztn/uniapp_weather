@@ -7,40 +7,42 @@
 		<image src="/static/favicon.png" mode="aspectFit"></image>
 		<view class="title">天气查询</view>
 	</view>
-	<!-- 用户信息 -->
-	<view class="info">
-		<!-- 头像 -->
-		<image :src="$store.state.avatar" mode="" class="avatar"></image>
-		<uni-section title="个人信息" type="line" class="detail">
-			<uni-list class="list">
-				<uni-list-item title="用户名" class="item">
-					<template #body>
-						<view style="padding-left:50rpx ;width:300rpx;">
-							用户名：
-						</view>
-						<view>{{$store.state.userName}}</view>
-					</template>
-				</uni-list-item>
-				<uni-list-item title="注册时间" class="item">
-					<template #body>
-						<view style="padding-left:50rpx ;width:300rpx;">
-							注册时间：
-						</view>
-						<view>{{registerDate}}</view>
-					</template>
-				</uni-list-item>
-				<uni-list-item title="最近登录时间" class="item">
-					<template #body>
-						<view style="padding-left:50rpx ;width:300rpx;">
-							最近登录时间：
-						</view>
-						<view>{{lastLoginDate}}</view>
-					</template>
-				</uni-list-item>
-			</uni-list>
-		</uni-section>
+	<view v-if="isDataReady">
+		<!-- 用户信息 -->
+		<view class=" info">
+			<!-- 头像 -->
+			<image :src="$store.state.avatar" mode="" class="avatar"></image>
+			<uni-section title="个人信息" type="line" class="detail">
+				<uni-list class="list">
+					<uni-list-item title="用户名" class="item">
+						<template #body>
+							<view style="padding-left:50rpx ;width:300rpx;">
+								用户名：
+							</view>
+							<view>{{$store.state.userName}}</view>
+						</template>
+					</uni-list-item>
+					<uni-list-item title="注册时间" class="item">
+						<template #body>
+							<view style="padding-left:50rpx ;width:300rpx;">
+								注册时间：
+							</view>
+							<view>{{registerDate}}</view>
+						</template>
+					</uni-list-item>
+					<uni-list-item title="最近登录时间" class="item">
+						<template #body>
+							<view style="padding-left:50rpx ;width:300rpx;">
+								最近登录时间：
+							</view>
+							<view>{{lastLoginDate}}</view>
+						</template>
+					</uni-list-item>
+				</uni-list>
+			</uni-section>
+		</view>
+		<button @click="logOut" style="width: 200px;" type="warn">注销</button>
 	</view>
-	<button @click="logOut" style="width: 200px;" type="warn">注销</button>
 </template>
 
 <script setup>
@@ -67,9 +69,15 @@
 	let registerDate = ref()
 	// 上次登录时间
 	let lastLoginDate = ref()
+	// 数据是否获取
+	let isDataReady = ref(false)
 
 	onMounted(async () => {
 		if (store.state.registerDate === "" && store.state.lastLoginDate === "") {
+			uni.showToast({
+				icon: 'loading',
+				title: '加载中'
+			})
 			let res = await getUserInfo(store.state.token)
 			registerDate.value = formatDate(new Date(res.register_date))
 			if (res.last_login_date) {
@@ -81,10 +89,12 @@
 				registerDate: registerDate.value,
 				lastLoginDate: lastLoginDate.value
 			})
+			uni.hideToast()
 		} else {
 			registerDate.value = store.state.registerDate
 			lastLoginDate.value = store.state.lastLoginDate
 		}
+		isDataReady.value = true
 	})
 
 	// 回退

@@ -1,8 +1,8 @@
 <template>
 	<!-- 天气信息 -->
-	<uni-section :title="detailInfo.province+' > '+detailInfo.city" type="circle" class="weatherInfo"
+	<uni-section v-if="isDataReady" :title="detailInfo.province+' > '+detailInfo.city" type="circle" class="weatherInfo"
 		v-show="isDataReady">
-		<uni-card title="基础卡片" sub-title="副标题" extra="额外信息" padding="10px 0">
+		<uni-card padding="10px 0">
 			<template v-slot:title>
 				<!-- 市区 -->
 				<view class="infoHead">
@@ -58,8 +58,8 @@
 	</uni-section>
 	<uni-section :title="'近 4 日'+detailInfo.city+'气温趋势图'" type="circle" class="weatherInfo fade" v-if="isDataReady">
 		<view class="charts-box" v-if="chartData">
-			<qiun-data-charts type="line" :opts="{extra:{line:{type:'curve'}}}" :eopts="{seriesTemplate:{smooth:true}}"
-				:chartData="chartData" :echartsH5="true" :echartsApp="true" />
+			<qiun-data-charts ref="charts" type="line" :opts="{extra:{line:{type:'curve'}}}"
+				:eopts="{seriesTemplate:{smooth:true}}" :chartData="chartData" :echartsH5="true" :echartsApp="true" />
 		</view>
 	</uni-section>
 </template>
@@ -95,13 +95,28 @@
 
 	let seriesData1, seriesData2
 
-	onMounted(async () => {
-		console.log(props.info);
+	onMounted(() => {
 		uni.showLoading({
 			title: '加载中'
 		});
+		renderData(props.info)
+		uni.hideLoading();
+	})
+	// 监听父组件传入城市 adcode 变化
+	watch(() => props.info, (newValue, oldValue) => {
+		renderData(newValue)
 
-		let weatherInfo = await getWeather(props.info)
+	})
+
+	// 动态计算天气 icon 值 
+	let tianqi = computed(() => 't-icon-' + weatherToIcon[detailInfo.value.weather])
+
+	// 获取组件数据
+	async function renderData(adcode) {
+		isDataReady.value = false
+
+
+		let weatherInfo = await getWeather(adcode)
 
 		detailInfo.value = {
 			...weatherInfo[0],
@@ -123,17 +138,8 @@
 				}
 			]
 		}
-
-		uni.hideLoading();
 		isDataReady.value = true
-	})
-
-	watch(props.info, () => {
-		console.log(1);
-	})
-
-
-	let tianqi = computed(() => 't-icon-' + weatherToIcon[detailInfo.value.weather])
+	}
 </script>
 
 
